@@ -2,7 +2,11 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
+  --lime-primary: #B8D62E;
+  --emerald-primary: #48A377;
+  --green-dark: #2E8B57;
+  --lime-light: #D4E881;
 }
 
 @theme inline {
@@ -12,15 +16,69 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+/* Custom Animations */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 8s ease infinite;
+}
+
+.animate-scroll {
+  animation: scroll 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Delay utilities */
+.delay-1000 {
+  animation-delay: 1s;
+}
+
+.delay-2000 {
+  animation-delay: 2s;
 }
