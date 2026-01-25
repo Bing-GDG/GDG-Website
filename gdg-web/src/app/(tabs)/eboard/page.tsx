@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Header from '../../../../components/header';
+import Footer from '../../../../components/footer';
 
 interface EboardMember {
   id: number;
@@ -135,27 +137,7 @@ export default function EboardPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-lime-500/20 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-3">
-            <img src="/logo_icon.svg" alt="GDG Logo" className="w-10 h-10" />
-            <div className="text-2xl font-bold bg-gradient-to-r from-lime-500 to-emerald-500 bg-clip-text text-transparent">
-              GDG
-            </div>
-          </a>
-          <div className="hidden md:flex gap-8">
-            <a href="/#about" className="text-gray-700 hover:text-lime-600 transition-colors font-medium">About</a>
-            <a href="/#gamejam" className="text-gray-700 hover:text-lime-600 transition-colors font-medium">Game Jam</a>
-            <a href="/#workshops" className="text-gray-700 hover:text-lime-600 transition-colors font-medium">Workshops</a>
-            <a href="/#projects" className="text-gray-700 hover:text-lime-600 transition-colors font-medium">Projects</a>
-            <a href="/#community" className="text-gray-700 hover:text-lime-600 transition-colors font-medium">Community</a>
-            <a href="/eboard" className="text-lime-600 font-semibold">Eboard</a>
-          </div>
-          <a href="/#community" className="bg-gradient-to-r from-lime-500 to-emerald-500 text-white px-6 py-2 rounded-full font-semibold hover:shadow-lg hover:shadow-lime-500/50 transition-all">
-            Join Now
-          </a>
-        </div>
-      </nav>
+      <Header />
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-16 px-6 overflow-hidden">
@@ -426,57 +408,7 @@ export default function EboardPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-lime-200 bg-gray-50 py-12 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <img src="/logo_icon.svg" alt="GDG Logo" className="w-8 h-8" />
-                <div className="text-2xl font-bold bg-gradient-to-r from-lime-600 to-emerald-600 bg-clip-text text-transparent">
-                  GDG
-                </div>
-              </div>
-              <p className="text-gray-600 text-sm">
-                Creating the next generation of game developers, one project at a time.
-              </p>
-            </div>
-            
-            <div>
-              <h4 className="font-bold text-gray-900 mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                <li><a href="/#about" className="text-gray-600 hover:text-lime-600 transition-colors">About</a></li>
-                <li><a href="/#gamejam" className="text-gray-600 hover:text-lime-600 transition-colors">Game Jam</a></li>
-                <li><a href="/#workshops" className="text-gray-600 hover:text-lime-600 transition-colors">Workshops</a></li>
-                <li><a href="/#projects" className="text-gray-600 hover:text-lime-600 transition-colors">Projects</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-bold text-gray-900 mb-4">Resources</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-600 hover:text-lime-600 transition-colors">Tutorials</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-lime-600 transition-colors">Tools</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-lime-600 transition-colors">Assets</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-lime-600 transition-colors">FAQ</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-bold text-gray-900 mb-4">Connect</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-600 hover:text-lime-600 transition-colors">Discord</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-lime-600 transition-colors">Instagram</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-lime-600 transition-colors">Twitter</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-lime-600 transition-colors">GitHub</a></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="border-t border-lime-200 pt-8 text-center text-gray-600 text-sm">
-            <p>&copy; 2025 Game Development Group. Made with 💚 by our members.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
