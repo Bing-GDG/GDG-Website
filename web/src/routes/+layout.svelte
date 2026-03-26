@@ -7,7 +7,8 @@ let { children } = $props();</script>
 	<link rel="icon" href="{favicon}" />
 </svelte:head>
 
-<header class="flex flex-row items-center border-b py-3 px-2 sticky top-0">
+<!-- header bar (navbar probably) -->
+<header class="bg-background flex flex-row items-center border-b py-3 px-2 sticky top-0">
 	<h1 class="mr-auto">TITLE</h1>
 	<h1 class="">BUTTONS</h1>
 </header>

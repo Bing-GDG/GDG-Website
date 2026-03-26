@@ -5,3 +5,4 @@
     <h1>Wow im a text thing</h1>
     <h1 class="font-bold text-2xl">WE ARE THE GDG.</h1>
 </div>
+
