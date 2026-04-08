@@ -1,5 +1,7 @@
 <script lang="ts">
     import Card from "$lib/components/ui/card/card.svelte";
+    import Schedule from "$lib/components/ui/Schedule.svelte";
+    import { GAMEJAM_EVENTS } from "$lib/consts";
 
     let someVar: number = $state(4);
 
@@ -11,9 +13,9 @@
 <div class="bg-background flex flex-col w-screen h-screen items-center justify-center px-[8vw]">
     <div class="bg-red-300 w-full h-full">
         <!-- this is the top section above the timer-->
-        <div class="flex flex-row">
-            <h1 class="text-foreground font-inter font-bold text-5xl">
-                Binghjamtom Game Jam
+        <div class="flex flex-row justify-center items-center m-4 mb-16">
+            <h1 class="text-foreground font-inter font-bold text-[6vw]">
+                Binghjamton Game Jam
             </h1>
         </div>
 
@@ -54,6 +56,26 @@
                     <p class="text-2xl">blah</p>
                 </Card>
             </div>
+        </div>
+        <div class="my-16">
+            <h1 class="text-5xl text-center"> 
+                OUR PREVIOUS SUBMISSIONS
+            </h1>
+            <div class="flex flex-row justify-center items-center">
+                <!-- rotating thingies -->
+
+            </div>
+        </div>
+        <div>
+            <!-- schedule block -->
+            <Schedule events={GAMEJAM_EVENTS} />
+        </div>
+
+        <h1 class="text-5xl text-center"> 
+            REGISTER
+        </h1>
+        <div class="max-h-200 overflow-scroll border border-foreground/75 rounded-lg my-16">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeZyN-aS0yIXLK14hsVUUeYtptEpYLX3WdbpGGVQR3_X-FaJg/viewform?embedded=true" class="w-full" height="1000" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
         </div>
     </div>
 </div>
