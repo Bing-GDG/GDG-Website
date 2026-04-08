@@ -1,4 +1,4 @@
-import type { Event } from "./components/ui/types";
+import type { Event, ItchGame } from "./components/ui/types";
 
 const JAN = 0;
 const FEB = 1;
@@ -140,3 +140,12 @@ export const GAMEJAM_EVENTS: Event[] = [
         loc: ""
     }
 ];
+
+export const FEATURED_GAMES: ItchGame[] = [
+    {
+        id: 2364408,
+        url: "https://patcavestudio.itch.io/the-meaning-of-life"
+    }
+]
+
+export const TIMER_TARGET = new Date(2026, APR, 10, 19, 0);

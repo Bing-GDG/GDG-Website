@@ -5,3 +5,8 @@ export type Event = {
     desc: string,
     loc: string
 }
+
+export type ItchGame = {
+    id: number,
+    url: string
+}

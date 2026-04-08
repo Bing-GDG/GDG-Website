@@ -1,13 +1,22 @@
 <script lang="ts">
     import Card from "$lib/components/ui/card/card.svelte";
     import Schedule from "$lib/components/ui/Schedule.svelte";
-    import { GAMEJAM_EVENTS } from "$lib/consts";
+    import Timer from "$lib/components/ui/Timer.svelte";
+    import { GAMEJAM_EVENTS, TIMER_TARGET } from "$lib/consts";
 
     let someVar: number = $state(4);
 
     function add(a: number, b: number): number {
         return a + b;
     }
+
+    // user: how do i make the carasoul of previous game submissions?
+    // claude opus 4.6: you can use a library like "svelte-carousel" or create a custom carousel component using Svelte's reactive features. Here's a simple example of how to create a basic carousel for previous game submissions:       
+    /*
+    ```typescript
+
+    ```
+    */
 </script>
 
 <div class="bg-background flex flex-col w-screen h-screen items-center justify-center px-[8vw]">
@@ -24,25 +33,22 @@
             <div class="flex flex-row gap-layout">
                 <div class="flex flex-col gap-layout flex-1">
                     <Card class="text-4xl">
-                        TIMER
+                        <Timer target={TIMER_TARGET} class="text-center font-bold text-6xl" />
                     </Card> 
                     <Card class="text-6xl">
                         REGISTER NOW.
                     </Card> 
-                    <div class="flex flex-row gap-layout">
-                        <Card class="flex-1">
-                            thing
-                        </Card>
-                        <Card class="flex-1">
-                            thing
-                        </Card>
-                        <Card class="flex-1">
-                            thing
-                        </Card>
-                    </div>
                 </div>
-                <Card class="text-6xl flex-1">
-                    GOOGLE FORM
+                <Card class="text-6xl flex-1 flex flex-col justify-around p-4">
+                    <a class="ml-auto" href="https://itch.io/jam/gdg-game-jam-6" target="_blank" rel="noopener noreferrer">
+                        ITCHIO
+                    </a>
+                    <div>
+                        TEAMS
+                    </div>
+                    <div class="ml-auto">
+                        RESOURCES
+                    </div>
                 </Card>
             </div>
             <div class="flex flex-row gap-layout">
@@ -51,12 +57,24 @@
                 </Card>
                 <Card class="flex-1 pl-4">
                     <p class="text-4xl">3 Prize Categories</p>
-                    <p class="text-2xl">blah</p>
+                    <p class="text-2xl"></p>
                     <p class="text-2xl">blah</p>
                     <p class="text-2xl">blah</p>
                 </Card>
             </div>
         </div>
+        <h1 class="text-5xl text-center"> 
+            REGISTER
+        </h1>
+        <div class="bg-black max-h-150 overflow-scroll border border-foreground/75 rounded-lg my-16">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeZyN-aS0yIXLK14hsVUUeYtptEpYLX3WdbpGGVQR3_X-FaJg/viewform?embedded=true" class="w-full" height="1000" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+        </div>
+        
+        <div>
+            <!-- schedule block -->
+            <Schedule events={GAMEJAM_EVENTS} />
+        </div>
+
         <div class="my-16">
             <h1 class="text-5xl text-center"> 
                 OUR PREVIOUS SUBMISSIONS
@@ -65,17 +83,6 @@
                 <!-- rotating thingies -->
 
             </div>
-        </div>
-        <div>
-            <!-- schedule block -->
-            <Schedule events={GAMEJAM_EVENTS} />
-        </div>
-
-        <h1 class="text-5xl text-center"> 
-            REGISTER
-        </h1>
-        <div class="max-h-200 overflow-scroll border border-foreground/75 rounded-lg my-16">
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeZyN-aS0yIXLK14hsVUUeYtptEpYLX3WdbpGGVQR3_X-FaJg/viewform?embedded=true" class="w-full" height="1000" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
         </div>
     </div>
 </div>
