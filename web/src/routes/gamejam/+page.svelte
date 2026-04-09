@@ -20,7 +20,7 @@
 </script>
 
 <div class="bg-background flex flex-col w-screen h-screen items-center justify-center px-[8vw]">
-    <div class="bg-red-300 w-full h-full">
+    <div class="w-full h-full">
         <!-- this is the top section above the timer-->
         <div class="flex flex-row justify-center items-center m-4 mb-16">
             <h1 class="text-foreground font-inter font-bold text-[6vw]">
@@ -43,12 +43,12 @@
                     <a class="ml-auto" href="https://itch.io/jam/gdg-game-jam-6" target="_blank" rel="noopener noreferrer">
                         ITCHIO
                     </a>
-                    <div>
+                    <a class="ml-auto" href="https://docs.google.com/forms/d/1ALromMlqgjrIubssrG1lZFDZkR4tqsSsjqsDqNCz4K0" target="_blank" rel="noopener noreferrer">
                         TEAMS
-                    </div>
-                    <div class="ml-auto">
+                    </a>
+                    <a class="ml-auto" href="" target="_blank" rel="noopener noreferrer">
                         RESOURCES
-                    </div>
+                    </a>
                 </Card>
             </div>
             <div class="flex flex-row gap-layout">
