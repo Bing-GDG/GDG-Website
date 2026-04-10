@@ -61,13 +61,13 @@
             </div>
             <div class="flex md:flex-row flex-col gap-layout">
                 <Card class="flex-2 h-60 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-linear-to-br from-card-foreground/15 via-transparent to-card-foreground/5">
-                        IMAGE
-                    </div>
+                    <img class="object-cover" src="..\src\lib\assets\gameJam5.jpg" alt="group picture of participants of game jam 5">
                 </Card>
                 <Card class="flex-1 justify-center p-6">
                     <p class="text-4xl font-bold">Prize Categories</p>
-                    <p class="mt-2 text-xl opacity-60">blah blah</p>
+                    <p class="mt-2 font-medium text-2xl opacity-60">Art & Design</p>
+                    <p class="mt-2 font-medium text-2xl opacity-60">Gameplay & Feel</p>
+                    <p class="mt-2 font-medium text-2xl opacity-60">Creativity & Innovation</p>
                 </Card>
             </div>
         </div>
