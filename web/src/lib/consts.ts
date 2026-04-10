@@ -32,7 +32,7 @@ export const GAMEJAM_EVENTS: Event[] = [
 
     // Friday 4/10
     {
-        start: new Date(2026, APR, 10, 19, 30),
+        start: new Date(2026, APR, 10, 13, 30),
         end: new Date(2026, APR, 12, 19, 0),
         title: "Time Until Submission",
         phantom: true

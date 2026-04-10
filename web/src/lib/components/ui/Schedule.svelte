@@ -57,12 +57,13 @@ import type { Event } from "./types";
     });
 
     // util
-    function formatTime(d: Date) {
+    function formatTime(d: Date, includeDate: boolean = false): string {
         const isOnHour = d.getMinutes() === 0;
 
         return d.toLocaleTimeString([], {
             hour: "numeric",
-            ...(isOnHour ? {} : { minute: "2-digit" })
+            ...(isOnHour ? {} : { minute: "2-digit" }),
+            ...(includeDate ? { month: "short", day: "numeric" } : {})
         });
     }
 </script>
@@ -72,12 +73,21 @@ import type { Event } from "./types";
 {#if activeEvents.length > 0}
 
 <div class="flex flex-col mb-4">
-    <p class="text-5xl font-bold text-center">Happening NOW</p>
+    <p class="text-5xl font-bold text-center"></p>
     {#each activeEvents as event}
         {@const donePercent = (now.getTime() - event.start.getTime()) / ((event.end!.getTime()) - event.start.getTime())}
         <div>
-            <p class="text-3xl">{event.title}</p>
-            <Progress class="h-5" value={donePercent * 100}></Progress>
+            <div class="flex md:flex-row flex-col md:items-center ">
+                <p class="text-3xl font-semibold">{event.title}</p>
+                {#if event.loc} 
+                    <p class="text-xl brightness-75 italic ml-2">@ {event.loc}</p>
+                {/if}
+            </div>
+            <Progress class="h-5 mt-2 border border-muted-foreground bg-transparent rounded-sm" value={donePercent * 100}/>
+            <div class="flex flex-row items-center text-xl brightness-75 italic mt-1">
+                <p>{formatTime(event.start, true)}</p>
+                <p class="ml-auto">{formatTime(event.end!, true)}</p>
+            </div>
         </div>
     {/each}
 </div>
@@ -97,15 +107,15 @@ import type { Event } from "./types";
                     {#each day as event}
                         <div class="mb-2">
                             <p class="text-lg">{event.title}</p>
-                                <p class="text-sm text-foreground/75">
-                                    {formatTime(event.start)}
-                                    {#if event.end && event.end !== event.start}
-                                        - {formatTime(event.end)}
-                                    {/if}
-                                    {#if event.loc && event.loc !== ""}
-                                        @ {event.loc}
-                                    {/if}
-                                </p>
+                            <p class="text-sm text-foreground/75">
+                                {formatTime(event.start)}
+                                {#if event.end && event.end !== event.start}
+                                    - {formatTime(event.end)}
+                                {/if}
+                                {#if event.loc && event.loc !== ""}
+                                    @ {event.loc}
+                                {/if}
+                            </p>
                         </div>
                     {/each}
                 </div>
