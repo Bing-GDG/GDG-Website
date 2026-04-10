@@ -47,7 +47,7 @@
                         TEAMS
                     </a>
                     <a class="ml-auto" href="" target="_blank" rel="noopener noreferrer">
-                        RESOURCES
+                        REGISTER
                     </a>
                 </Card>
             </div>
@@ -75,14 +75,13 @@
             <Schedule events={GAMEJAM_EVENTS} />
         </div>
 
-        <div class="my-16">
+        <!-- <div class="my-16">
             <h1 class="text-5xl text-center"> 
                 OUR PREVIOUS SUBMISSIONS
             </h1>
             <div class="flex flex-row justify-center items-center">
-                <!-- rotating thingies -->
-
+                rotating stuff
             </div>
-        </div>
+        </div> -->
     </div>
 </div>

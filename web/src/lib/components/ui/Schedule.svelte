@@ -13,6 +13,8 @@ import type { Event } from "./types";
         const grouped: Event[][] = [];
         let currentDay: Date | null = null;
         for (const event of sorted) {
+            if (event.phantom) continue;
+
             if (!currentDay || event.start.toDateString() !== currentDay.toDateString()) {
                 currentDay = event.start;
                 grouped.push([]);
@@ -71,6 +73,8 @@ import type { Event } from "./types";
 
 <!-- progress bars for active events -->
 
+{#if activeEvents.length > 0}
+
 <div class="flex flex-col mb-4">
     <p class="text-5xl font-bold text-center">Happening NOW</p>
     {#each activeEvents as event}
@@ -81,6 +85,8 @@ import type { Event } from "./types";
         </div>
     {/each}
 </div>
+
+{/if}
 
 <Card class="border border-foreground/75 flex md:flex-row flex-col justify-between">
     {#each days as day, i}
@@ -94,14 +100,16 @@ import type { Event } from "./types";
                     })}</h2>
                     {#each day as event}
                         <div class="mb-2">
-                            <p>{event.title}</p>
-                            {#if event.loc && event.loc !== ""}
+                            <p class="text-lg">{event.title}</p>
                                 <p class="text-sm text-foreground/75">
                                     {formatTime(event.start)}
-                                    {event.end ? `- ${formatTime(event.end)}` : ""}
-                                    {(event.loc && event.loc !== "") ? ` @ ${event.loc}` : ""}
+                                    {#if event.end && event.end !== event.start}
+                                        - {formatTime(event.end)}
+                                    {/if}
+                                    {#if event.loc && event.loc !== ""}
+                                        @ {event.loc}
+                                    {/if}
                                 </p>
-                            {/if}
                         </div>
                     {/each}
                 </div>
