@@ -140,7 +140,7 @@ export const GAMEJAM_EVENTS: Event[] = [
         loc: "Jazzman's Room"
     },
     {
-        start: new Date(2026, APR, 12, 19, 30),
+        start: new Date(2026, APR, 12, 19, 45),
         end: new Date(2026, APR, 12, 21, 0),
         title: "Closing Ceremony",
         desc: "Participant Presentations, Judging, and Awards",

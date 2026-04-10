@@ -23,8 +23,8 @@
     <div class="w-full h-full">
         <!-- this is the top section above the timer-->
         <div class="flex flex-row justify-center items-center m-4 mb-16">
-            <h1 class="text-foreground font-inter font-bold text-[6vw]">
-                Binghjamton Game Jam
+            <h1 class="text-primary font-inter font-bold text-[6vw] uppercase">
+                Binghamton Game Jam 6
             </h1>
         </div>
 
