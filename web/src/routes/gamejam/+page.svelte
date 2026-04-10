@@ -1,82 +1,93 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+    import { gsap } from "gsap";
     import Card from "$lib/components/ui/card/card.svelte";
     import Schedule from "$lib/components/ui/Schedule.svelte";
     import Timer from "$lib/components/ui/Timer.svelte";
-    import { GAMEJAM_EVENTS, TIMER_TARGET } from "$lib/consts";
+    import { GAMEJAM_EVENTS, ITCHIO_URL, REGISTER_FORM_URL, TEAM_RESIGRATION_FORM_URL, TIMER_TARGET } from "$lib/consts";
 
-    let someVar: number = $state(4);
+    let titleEl: HTMLElement;
+    let titleHeaderEl: HTMLElement;
 
-    function add(a: number, b: number): number {
-        return a + b;
-    }
+    onMount(() => {
+        gsap.from(titleEl, {
+            y: -60,
+            opacity: 0,
+            duration: 1.1,
+            ease: "power3.out",
+        });
 
-    // user: how do i make the carasoul of previous game submissions?
-    // claude opus 4.6: you can use a library like "svelte-carousel" or create a custom carousel component using Svelte's reactive features. Here's a simple example of how to create a basic carousel for previous game submissions:       
-    /*
-    ```typescript
-
-    ```
-    */
+        gsap.from(titleHeaderEl, {
+            y: -60,
+            opacity: 0,
+            duration: 1.1,
+            delay: 0.2,
+            ease: "power3.out",
+        });
+    });
 </script>
 
-<div class="bg-background flex flex-col w-screen h-screen items-center justify-center px-[8vw]">
-    <div class="w-full h-full">
+<div class="bg-background flex flex-col w-screen min-h-screen items-center px-[8vw] py-16">
+    <div class="w-full max-w-6xl">
         <!-- this is the top section above the timer-->
-        <div class="flex flex-row justify-center items-center m-4 mb-16">
-            <h1 class="text-primary font-inter font-bold text-[6vw] uppercase">
+        <div class="flex flex-col items-center m-4 mb-16">
+            <h1 bind:this={titleEl} class="text-center bg-linear-to-r from-[oklch(0.8213_0.0653_225.72)] to-[oklch(0.8413_0.1359_154.61)] text-transparent bg-clip-text inline-block font-inter font-bold text-6xl uppercase leading-none">
                 Binghamton Game Jam 6
             </h1>
+            <p bind:this={titleHeaderEl} class="mt-4 text-xl tracking-[0.3em] uppercase opacity-60">April 10 – 12 @ Innovation Lab</p>
         </div>
 
         <!-- the block with the timer and google form -->
         <div class="flex flex-col gap-layout">
-            <div class="flex flex-row gap-layout">
-                <div class="flex flex-col gap-layout flex-1">
-                    <Card class="text-4xl">
-                        <Timer target={TIMER_TARGET} class="text-center font-bold text-6xl" />
-                    </Card> 
-                    <Card class="text-6xl">
-                        REGISTER NOW.
-                    </Card> 
-                </div>
-                <Card class="text-6xl flex-1 flex flex-col justify-around p-4">
-                    <a class="ml-auto" href="https://itch.io/jam/gdg-game-jam-6" target="_blank" rel="noopener noreferrer">
-                        ITCHIO
-                    </a>
-                    <a class="ml-auto" href="https://docs.google.com/forms/d/1ALromMlqgjrIubssrG1lZFDZkR4tqsSsjqsDqNCz4K0" target="_blank" rel="noopener noreferrer">
-                        TEAMS
-                    </a>
-                    <a class="ml-auto" href="" target="_blank" rel="noopener noreferrer">
+            <div class="flex md:flex-row flex-col gap-layout">
+                <Card class="flex-1 items-center justify-center p-6">
+                    <p class="text-3xl opacity-75">Starts in...</p>
+                    <Timer target={TIMER_TARGET} class="text-center font-bold text-6xl" />
+                </Card>
+                <Card class="flex-1 flex flex-col justify-around p-6 text-6xl font-bold gap-4">
+                    <a class="ml-auto items-center opacity-80 hover:opacity-100 transition-opacity" href={REGISTER_FORM_URL} target="_blank" rel="noopener noreferrer">
                         REGISTER
+                        <span class="transition-transform group-hover:translate-x-2">>></span>
+                    </a>
+                    <a class="items-center opacity-80 hover:opacity-100 transition-opacity" href={TEAM_RESIGRATION_FORM_URL} target="_blank" rel="noopener noreferrer">
+                        TEAMS
+                        <span class="transition-transform group-hover:translate-x-2">>></span>
+                    </a>
+                    <a class="ml-auto items-center opacity-80 hover:opacity-100 transition-opacity" href={ITCHIO_URL} target="_blank" rel="noopener noreferrer">
+                        ITCHIO
+                        <span class="transition-transform group-hover:translate-x-2">>></span>
                     </a>
                 </Card>
             </div>
-            <div class="flex flex-row gap-layout">
-                <Card class="flex-2 h-60">
-                    IMAGE
+            <div class="flex md:flex-row flex-col gap-layout">
+                <Card class="flex-2 h-60 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-linear-to-br from-card-foreground/15 via-transparent to-card-foreground/5">
+                        IMAGE
+                    </div>
                 </Card>
-                <Card class="flex-1 pl-4">
-                    <p class="text-4xl">3 Prize Categories</p>
-                    <p class="text-2xl"></p>
-                    <p class="text-2xl">blah</p>
-                    <p class="text-2xl">blah</p>
+                <Card class="flex-1 justify-center p-6">
+                    <p class="text-4xl font-bold">Prize Categories</p>
+                    <p class="mt-2 text-xl opacity-60">blah blah</p>
                 </Card>
             </div>
         </div>
-        <h1 class="text-5xl text-center"> 
+        <!-- <h1 class="text-5xl text-center">
             REGISTER
         </h1>
         <div class="bg-black max-h-150 overflow-scroll border border-foreground/75 rounded-lg my-16">
             <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeZyN-aS0yIXLK14hsVUUeYtptEpYLX3WdbpGGVQR3_X-FaJg/viewform?embedded=true" class="w-full" height="1000" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-        </div>
-        
-        <div>
+        </div> -->
+
+        <div class="my-16 flex flex-col gap-y-8">
+            <h1 class="text-5xl text-center font-bold">
+                Our Schedule
+            </h1>
             <!-- schedule block -->
             <Schedule events={GAMEJAM_EVENTS} />
         </div>
 
         <!-- <div class="my-16">
-            <h1 class="text-5xl text-center"> 
+            <h1 class="text-5xl text-center">
                 OUR PREVIOUS SUBMISSIONS
             </h1>
             <div class="flex flex-row justify-center items-center">

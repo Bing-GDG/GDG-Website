@@ -13,14 +13,17 @@ const OCT = 9;
 const NOV = 10;
 const DEC = 11;
 
+export const FEATURED_GAMES: ItchGame[] = [
+    {
+        id: 2364408,
+        url: "https://patcavestudio.itch.io/the-meaning-of-life"
+    }
+]
+
+/* gamejam information */
+
 export const GAMEJAM_EVENTS: Event[] = [
     // Thursday 4/9
-    {
-        start: new Date(2026, APR, 9, 13, 0),
-        end: new Date(2026, APR, 9, 19, 0),
-        title: "TEST EVENT",
-        loc: "UU103"
-    },
     {
         start: new Date(2026, APR, 9, 18, 0),
         title: "Game Jam Mixer",
@@ -40,6 +43,13 @@ export const GAMEJAM_EVENTS: Event[] = [
         end: new Date(2026, APR, 10, 18, 0),
         title: "Unity Multiplayer Workshop",
         desc: "Host: Joseph",
+        loc: "Innovation Lab"
+    },
+    {
+        start: new Date(2026, APR, 10, 13, 0),
+        end: new Date(2026, APR, 10, 18, 0),
+        title: "TEST",
+        desc: "",
         loc: "Innovation Lab"
     },
     {
@@ -148,11 +158,10 @@ export const GAMEJAM_EVENTS: Event[] = [
     }
 ];
 
-export const FEATURED_GAMES: ItchGame[] = [
-    {
-        id: 2364408,
-        url: "https://patcavestudio.itch.io/the-meaning-of-life"
-    }
-]
-
 export const TIMER_TARGET = new Date(2026, APR, 10, 19, 0);
+
+export const ITCHIO_URL = "https://itch.io/jam/gdg-game-jam-6";
+
+export const TEAM_RESIGRATION_FORM_URL = "https://docs.google.com/forms/d/1ALromMlqgjrIubssrG1lZFDZkR4tqsSsjqsDqNCz4K0";
+
+export const REGISTER_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeZyN-aS0yIXLK14hsVUUeYtptEpYLX3WdbpGGVQR3_X-FaJg/viewform"
