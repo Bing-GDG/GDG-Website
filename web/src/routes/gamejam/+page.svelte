@@ -4,7 +4,7 @@
     import Card from "$lib/components/ui/card/card.svelte";
     import Schedule from "$lib/components/ui/Schedule.svelte";
     import Timer from "$lib/components/ui/Timer.svelte";
-    import { GAMEJAM_EVENTS, ITCHIO_URL, REGISTER_FORM_URL, TEAM_RESIGRATION_FORM_URL, TIMER_TARGET } from "$lib/consts";
+    import { GAMEJAM_EVENTS, ITCHIO_URL, REGISTER_FORM_URL, TEAM_RESIGRATION_FORM_URL, GAMEJAM_START, GAMEJAM_END } from "$lib/consts";
 
     // TODO! most of this will be reworked later
     let titleEl: HTMLElement;
@@ -17,6 +17,16 @@
     let rightBox2 = $state<HTMLElement | null>(null);
 
     let schedule: HTMLElement;
+
+    // TODO! make the time a global hook we have like 3 differnet places where this is setup
+    let now = $state(new Date());
+    onMount(() => {
+        const id = setInterval(() => {
+            now = new Date();
+        }, 1000 * 0.1); 
+
+        return () => clearInterval(id);
+    });
 
     onMount(() => {
         // holy slop
@@ -92,8 +102,15 @@
         <div class="flex flex-col gap-layout">
             <div class="flex md:flex-row flex-col gap-layout">
                 <Card class="flex-1 items-center justify-center p-6" bind:ref={leftBox1}>
-                    <p class="text-3xl opacity-75">Starts in...</p>
-                    <Timer target={TIMER_TARGET} class="text-center font-bold text-6xl" />
+                    {#if now.getTime() < GAMEJAM_START.getTime()}
+                        <p class="text-4xl opacity-75">Starts in...</p>
+                        <Timer target={GAMEJAM_START} class="text-center font-bold text-6xl" />
+                    {:else if now.getTime() < GAMEJAM_END.getTime()}
+                        <p class="text-4xl opacity-75">Ends in...</p>
+                        <Timer target={GAMEJAM_END} class="text-center font-bold text-6xl" />
+                    {:else}
+                        <p class="text-4xl opacity-75 text-center">This Game Jam has ended!</p>
+                    {/if}
                 </Card>
                 <Card class="flex-1 flex flex-col justify-around p-6 text-6xl font-bold gap-4" bind:ref={rightBox1}>
                     <a class="ml-auto items-center opacity-80 hover:opacity-100 transition-opacity" href={REGISTER_FORM_URL} target="_blank" rel="noopener noreferrer">
@@ -110,8 +127,8 @@
                     </a>
                 </Card>
             </div>
-            <div class="flex md:flex-row flex-col gap-layout">
-                <Card class="flex-2 h-60 relative overflow-hidden" bind:ref={leftBox2}>
+            <div class="flex md:flex-row flex-col gap-layout max-h-80">
+                <Card class="flex-2 relative overflow-hidden p-0" bind:ref={leftBox2}>
                     <img class="object-cover" src="..\src\lib\assets\gameJam5.jpg" alt="group picture of participants of game jam 5">
                 </Card>
                 <Card class="flex-1 justify-center p-6" bind:ref={rightBox2}>

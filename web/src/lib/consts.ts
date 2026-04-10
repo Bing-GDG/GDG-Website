@@ -32,9 +32,9 @@ export const GAMEJAM_EVENTS: Event[] = [
 
     // Friday 4/10
     {
-        start: new Date(2026, APR, 10, 13, 30),
+        start: new Date(2026, APR, 10, 19, 0),
         end: new Date(2026, APR, 12, 19, 0),
-        title: "Time Until Submission",
+        title: "Time Remaining",
         phantom: true
     },
 
@@ -43,13 +43,6 @@ export const GAMEJAM_EVENTS: Event[] = [
         end: new Date(2026, APR, 10, 18, 0),
         title: "Unity Multiplayer Workshop",
         desc: "Host: Joseph",
-        loc: "Innovation Lab"
-    },
-    {
-        start: new Date(2026, APR, 10, 13, 0),
-        end: new Date(2026, APR, 10, 18, 0),
-        title: "TEST",
-        desc: "",
         loc: "Innovation Lab"
     },
     {
@@ -158,7 +151,8 @@ export const GAMEJAM_EVENTS: Event[] = [
     }
 ];
 
-export const TIMER_TARGET = new Date(2026, APR, 10, 19, 0);
+export const GAMEJAM_START = new Date(2026, APR, 10, 19, 0);
+export const GAMEJAM_END = new Date(2026, APR, 12, 19, 0);
 
 export const ITCHIO_URL = "https://itch.io/jam/gdg-game-jam-6";
 
