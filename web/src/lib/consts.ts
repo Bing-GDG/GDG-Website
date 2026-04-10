@@ -19,19 +19,18 @@ export const GAMEJAM_EVENTS: Event[] = [
         start: new Date(2026, APR, 9, 13, 0),
         end: new Date(2026, APR, 9, 19, 0),
         title: "TEST EVENT",
-        desc: "",
         loc: "UU103"
     },
     {
         start: new Date(2026, APR, 9, 18, 0),
         title: "Game Jam Mixer",
-        desc: "",
         loc: "UU103"
     },
 
     // Friday 4/10
     {
         start: new Date(2026, APR, 10, 19, 30),
+        end: new Date(2026, APR, 12, 19, 0),
         title: "Time Until Submission",
         phantom: true
     },
@@ -52,17 +51,18 @@ export const GAMEJAM_EVENTS: Event[] = [
     {
         start: new Date(2026, APR, 10, 18, 30),
         title: "Check-In",
-        desc: "",
         loc: "Innovation Lab"
     },
     {
         start: new Date(2026, APR, 10, 19, 0),
+        end: new Date(2026, APR, 10, 19, 30),
         title: "Opening Ceremony",
         desc: "The theme is announced here..",
         loc: "Innovation Lab"
     },
     {
         start: new Date(2026, APR, 10, 19, 30),
+        end: new Date(2026, APR, 10, 20, 0),
         title: "Team Formation",
         desc: "Individuals looking for teams are paired based on project interests",
         loc: "Innovation Lab"
@@ -77,15 +77,13 @@ export const GAMEJAM_EVENTS: Event[] = [
     {
         start: new Date(2026, APR, 10, 23, 0),
         title: "Rooms Close",
-        desc: "",
-        loc: "Innovation Lab"
+        loc: "Innovation Lab",
     },
 
     // Saturday 4/11
     {
         start: new Date(2026, APR, 11, 8, 0),
         title: "Rooms Open",
-        desc: "",
         loc: "Innovation Lab"
     },
     {
@@ -102,14 +100,13 @@ export const GAMEJAM_EVENTS: Event[] = [
     },
     {
         start: new Date(2026, APR, 11, 18, 0),
-        title: "Dinner Is Served",
+        title: "Dinner",
         desc: "Please fill out the Meal Check-In Form when grabbing food.",
         loc: "Jazzman's Room"
     },
     {
         start: new Date(2026, APR, 11, 23, 0),
         title: "Rooms Close",
-        desc: "",
         loc: "Innovation Lab"
     },
 
@@ -117,26 +114,23 @@ export const GAMEJAM_EVENTS: Event[] = [
     {
         start: new Date(2026, APR, 12, 8, 0),
         title: "Rooms Open",
-        desc: "",
         loc: "Innovation Lab"
     },
     {
         start: new Date(2026, APR, 12, 10, 0),
-        title: "Breakfast Is Served",
+        title: "Breakfast",
         desc: "Please fill out the Meal Check-In Form when grabbing food.",
         loc: "Jazzman's Room"
     },
     {
         start: new Date(2026, APR, 12, 14, 0),
-        title: "Lunch Is Served",
+        title: "Lunch",
         desc: "Please fill out the Meal Check-In Form when grabbing food.",
         loc: "Jazzman's Room"
     },
     {
         start: new Date(2026, APR, 12, 19, 0),
-        end: new Date(2026, APR, 12, 19, 0),
         title: "Submissions Close",
-        desc: "",
         loc: "Innovation Lab"
     },
     {

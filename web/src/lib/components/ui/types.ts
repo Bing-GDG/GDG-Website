@@ -5,7 +5,7 @@ export type Event = {
     desc?: string,
     loc?: string,
     // the evnet isnt displayed on the schedule but it is still displayed in the active events section
-    phantom?: boolean
+    phantom?: boolean,
 }
 
 export type ItchGame = {

@@ -46,16 +46,12 @@ import type { Event } from "./types";
         return days.findIndex((day) => isSameDay(day[0].start, now));
     });
 
-    // if theres no explicit end time, use latest timestamp across all events
-    let implicitEnd: Date = $derived(new Date(Math.max(
-        ...events.map(e => Math.max(e.start.getTime(), e.end?.getTime() ?? 0))
-    )));
-
     // events that are currently ongoing
     let activeEvents: Event[] = $derived.by(() => {
         const sorted = events.toSorted((a, b) => a.start.getTime() - b.start.getTime());
         return sorted.filter((event) => {
-            const eventEnd = event.end ?? implicitEnd;
+            const eventEnd = event.end;
+            if (!eventEnd) return false; // its an 'instant' or marker type event
             return now >= event.start && now < eventEnd;
         });
     });
@@ -78,7 +74,7 @@ import type { Event } from "./types";
 <div class="flex flex-col mb-4">
     <p class="text-5xl font-bold text-center">Happening NOW</p>
     {#each activeEvents as event}
-        {@const donePercent = (now.getTime() - event.start.getTime()) / ((event.end?.getTime() ?? implicitEnd.getTime()) - event.start.getTime())}
+        {@const donePercent = (now.getTime() - event.start.getTime()) / ((event.end!.getTime()) - event.start.getTime())}
         <div>
             <p class="text-3xl">{event.title}</p>
             <Progress class="h-5" value={donePercent * 100}></Progress>
