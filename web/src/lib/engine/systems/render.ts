@@ -18,7 +18,7 @@ export class RenderSystem implements System {
     tick(world: World, dt: number): void {
         for (const [entity, o, t] of world.view<[ThreeObject, Transform3d]>("ThreeObject", "Transform3d")) {
             o.mesh.position.copy(t.position);
-            o.mesh.rotation.setFromVector3(t.rotation);
+            o.mesh.quaternion.copy(t.rotation);
             o.mesh.scale.copy(t.scale);
         }
 
@@ -28,7 +28,7 @@ export class RenderSystem implements System {
 
         const [entity, c, t] = cameras[0];
         c.camera.position.copy(t.position);
-        c.camera.rotation.setFromVector3(t.rotation);
+        c.camera.quaternion.copy(t.rotation);
 
         this.resize(c.camera);
         this.renderer.render(this.scene, c.camera);

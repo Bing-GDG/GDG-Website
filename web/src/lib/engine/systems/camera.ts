@@ -1,4 +1,4 @@
-import { Vector3 } from "three";
+import { Euler, Vector3 } from "three";
 import type { Transform3d } from "../components/general";
 import type { ThreeCamera } from "../components/graphics";
 import type { System, World } from "../mecs";
@@ -9,23 +9,24 @@ const PITCH_LIMIT = Math.PI / 2 - 0.01;
 
 /// freecam flying - hold left mouse and drag to look, wasd to move, q/e for down/up
 export class CameraControlSystem implements System {
+    private yaw = 0;
+    private pitch = 0;
+
     tick(world: World, dt: number): void {
         const input = world.input;
 
         for (const [entity, c, t] of world.view<[ThreeCamera, Transform3d]>("ThreeCamera", "Transform3d")) {
             if (input.mousePress(0)) {
                 const delta = input.mouseDelta;
-                t.rotation.y -= delta.x * LOOK_SENSITIVITY;
-                t.rotation.x -= delta.y * LOOK_SENSITIVITY;
-                t.rotation.x = Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, t.rotation.x));
+                this.yaw -= delta.x * LOOK_SENSITIVITY;
+                this.pitch -= delta.y * LOOK_SENSITIVITY;
+                this.pitch = Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, this.pitch));
             }
 
-            const forward = new Vector3(
-                -Math.sin(t.rotation.y) * Math.cos(t.rotation.x),
-                Math.sin(t.rotation.x),
-                -Math.cos(t.rotation.y) * Math.cos(t.rotation.x)
-            );
-            const right = new Vector3(Math.cos(t.rotation.y), 0, -Math.sin(t.rotation.y));
+            t.rotation.setFromEuler(new Euler(this.pitch, this.yaw, 0, "YXZ"));
+
+            const forward = new Vector3(0, 0, -1).applyQuaternion(t.rotation);
+            const right = new Vector3(1, 0, 0).applyQuaternion(t.rotation);
 
             const move = new Vector3();
             if (input.keyPress("w")) move.add(forward);
