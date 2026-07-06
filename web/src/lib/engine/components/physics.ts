@@ -18,5 +18,6 @@ export type RigidBody = {
     angularDamping?: number,
     lockRotations?: boolean,
     velocity?: { x: number, y: number, z: number },
-    angularVelocity?: { x: number, y: number, z: number }
+    angularVelocity?: { x: number, y: number, z: number },
+    dontSyncRotation?: boolean
 }

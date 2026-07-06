@@ -30,49 +30,48 @@ type BodyHandle = {
 };
 
 export class PhysicsSystem implements System {
-    private ecs: World;
+    private ecs?: World;
     private gravity: Vec3;
     private rapier?: typeof import("@dimforge/rapier3d-compat");
-    private world?: RAPIER.World;
+    private physicsWorld?: RAPIER.World;
     private handles: Map<number, BodyHandle> = new Map();
     private disposed = false;
 
-    constructor(world: World, gravity: Vec3 = { x: 0, y: -9.81, z: 0 }) {
-        this.ecs = world;
+    constructor(gravity: Vec3 = { x: 0, y: -9.81, z: 0 }) {
         this.gravity = gravity;
-
-        world.onAttach<RigidBody>("RigidBody", (entity, rb) => {
-            if (this.world) this.realize(entity, rb);
-        });
-
-        world.onDetach<RigidBody>("RigidBody", (entity) => {
-            const h = this.handles.get(entity);
-            if (h && this.world) {
-                this.world.removeRigidBody(h.body);
-                this.handles.delete(entity);
-            }
-        });
-
-        this.init().catch((e) => console.error("physics init FALIED?", e));
     }
 
     dispose(): void {
         this.disposed = true;
         this.handles.clear();
-        if (this.world) {
-            this.world.free();
-            this.world = undefined;
+        if (this.physicsWorld) {
+            this.physicsWorld.free();
+            this.physicsWorld = undefined;
         }
     }
 
-    private async init(): Promise<void> {
+    async init(world: World): Promise<void> {
+        this.ecs = world;
+
+        world.onAttach<RigidBody>("RigidBody", (entity, rb) => {
+            if (this.physicsWorld) this.realize(entity, rb);
+        });
+
+        world.onDetach<RigidBody>("RigidBody", (entity) => {
+            const h = this.handles.get(entity);
+            if (h && this.physicsWorld) {
+                this.physicsWorld.removeRigidBody(h.body);
+                this.handles.delete(entity);
+            }
+        });
+
         const rapier = await import("@dimforge/rapier3d-compat");
         if (this.disposed) return;
         await rapier.init();
         if (this.disposed) return;
 
         this.rapier = rapier;
-        this.world = new rapier.World(this.gravity);
+        this.physicsWorld = new rapier.World(this.gravity);
 
         for (const [entity, rb] of this.ecs.view<[RigidBody]>("RigidBody"))
             this.realize(entity, rb);
@@ -81,9 +80,9 @@ export class PhysicsSystem implements System {
     // a lot of ts exists to keep rapier self contained, because its annoying to include
     private realize(entity: number, rb: RigidBody): void {
         const rapier = this.rapier!;
-        const world = this.world!;
+        const world = this.physicsWorld!;
 
-        const t = this.ecs.view<[Transform3d]>("Transform3d").find(([e]) => e === entity)?.[1];
+        const t = this.ecs!.view<[Transform3d]>("Transform3d").find(([e]) => e === entity)?.[1];
 
         let bodyDesc: RAPIER.RigidBodyDesc;
         switch (rb.type) {
@@ -233,7 +232,7 @@ export class PhysicsSystem implements System {
     }
 
     tick(world: World, dt: number): void {
-        if (!this.world) return;
+        if (!this.physicsWorld) return;
 
         for (const [entity, rb, t] of world.view<[RigidBody, Transform3d]>("RigidBody", "Transform3d")) {
             const h = this.handles.get(entity);
@@ -245,7 +244,8 @@ export class PhysicsSystem implements System {
         }
 
         // pull modified data and then push derived data
-        this.world.step();
+        this.physicsWorld.timestep = dt;
+        this.physicsWorld.step();
 
         for (const [entity, rb, t] of world.view<[RigidBody, Transform3d]>("RigidBody", "Transform3d")) {
             const h = this.handles.get(entity);

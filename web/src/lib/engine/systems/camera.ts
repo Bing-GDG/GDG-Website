@@ -1,43 +1,41 @@
-import { Euler, Vector3 } from "three";
+import { Euler, Quaternion, Vector3 } from "three";
 import type { Transform3d } from "../components/general";
 import type { ThreeCamera } from "../components/graphics";
 import type { System, World } from "../mecs";
+import type { MainPlayer } from "../components/player";
 
-const LOOK_SENSITIVITY = 0.005;
-const MOVE_SPEED = 5;
 const PITCH_LIMIT = Math.PI / 2 - 0.01;
 
-/// freecam flying - hold left mouse and drag to look, wasd to move, q/e for down/up
-export class CameraControlSystem implements System {
+export class CameraSystem implements System {
     private yaw = 0;
     private pitch = 0;
+
+    init(world: World) {
+        world.input.lock("Locked");
+    }
 
     tick(world: World, dt: number): void {
         const input = world.input;
 
-        for (const [entity, c, t] of world.view<[ThreeCamera, Transform3d]>("ThreeCamera", "Transform3d")) {
-            if (input.mousePress(0)) {
-                const delta = input.mouseDelta;
-                this.yaw -= delta.x * LOOK_SENSITIVITY;
-                this.pitch -= delta.y * LOOK_SENSITIVITY;
-                this.pitch = Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, this.pitch));
-            }
+        const viewResult = world.view<[MainPlayer, ThreeCamera, Transform3d]>("MainPlayer", "ThreeCamera", "Transform3d");
 
-            t.rotation.setFromEuler(new Euler(this.pitch, this.yaw, 0, "YXZ"));
+        if (viewResult.length === 0) return;
 
-            const forward = new Vector3(0, 0, -1).applyQuaternion(t.rotation);
-            const right = new Vector3(1, 0, 0).applyQuaternion(t.rotation);
+        const [entity, player, c, t] = viewResult[0];
 
-            const move = new Vector3();
-            if (input.keyPress("w")) move.add(forward);
-            if (input.keyPress("s")) move.sub(forward);
-            if (input.keyPress("d")) move.add(right);
-            if (input.keyPress("a")) move.sub(right);
-            if (input.keyPress("e")) move.y += 1;
-            if (input.keyPress("q")) move.y -= 1;
+        // look around 
+        const delta = input.mouseDelta;
+        this.yaw -= delta.x * player.lookSensitivity;
+        this.pitch -= delta.y * player.lookSensitivity;
+        this.pitch = Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, this.pitch));
 
-            if (move.lengthSq() > 0)
-                t.position.add(move.normalize().multiplyScalar(MOVE_SPEED * dt));
-        }
+        // TODO! we'd probably want to set the transform's rotation for meshes and stuff later
+        // but not rn, and not on all axes for sure.
+        // t.rotation.setFromEuler(new Euler(this.pitch, this.yaw, 0, "YXZ"));
+        const rq = new Quaternion().setFromEuler(new Euler(this.pitch, this.yaw, 0, "YXZ"));
+
+        // do the thing (sync position + rot)
+        c.camera.position.copy(t.position);
+        c.camera.quaternion.copy(rq);
     }
 }

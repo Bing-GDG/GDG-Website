@@ -7,6 +7,7 @@ type Entity = number;
 type ComponentStore = Record<string, any>;
 
 export interface System {
+    init(world: World): any;
     tick(world: World, dt: number): void;
 }
 
@@ -38,19 +39,52 @@ export class World {
 
     private systems: System[] = [];
 
+    private _time: number = 0;
+    private _timescale: number = 1;
+    // the world clamps the timestep so we don't have insane mega dts 
+    // if the tab freezes or loses focus or smth.
+    // INDEPENDENT OF TIMESCALE! timescale will continue to scale it up, even 
+    // if the dt itself is clamped. 
+    private maxTimestep: number;
+
+    constructor(maxTimestep: number = 1/30) {
+        this.maxTimestep = maxTimestep;
+    }
+
     /// Global input singleton, see singletons/input.ts
     public get input(): Input {
         return Input.instance;
     }
 
+    /// Total elapsed time in milliseconds since the world started ticking
+    public get time(): number {
+        return this._time;
+    }
+
+    /// Scales the movement of time for the world
+    public get timescale(): number {
+        return this._timescale;
+    }
+
+    public set timescale(value: number) {
+        this._timescale = Math.max(0, value);
+    }
+
     public registerSystem(system: System) {
+        system.init(this);
         this.systems.push(system);
     }
 
+    /// dt is always clamped to the `maxTimestep` given in the constructor to
+    /// prevent accidental instability. 
     public tick(dt: number) {
+        const scaled = Math.min(dt, this.maxTimestep) * this._timescale;
+        this._time += scaled * 1000;
+
         for (const system of this.systems) {
-            system.tick(this, dt);
+            system.tick(this, scaled);
         }
+        
         this.input.flush();
     }
 

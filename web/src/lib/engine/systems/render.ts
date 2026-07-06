@@ -7,9 +7,11 @@ export class RenderSystem implements System {
     private renderer: THREE.WebGLRenderer;
     private scene: THREE.Scene = new THREE.Scene();
 
-    constructor(world: World, canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement) {
         this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    }
 
+    init(world: World) {
         // things only render when parented to a scene
         world.onAttach<ThreeObject>("ThreeObject", (entity, o) => this.scene.add(o.mesh));
         world.onDetach<ThreeObject>("ThreeObject", (entity, o) => this.scene.remove(o.mesh));
@@ -27,8 +29,6 @@ export class RenderSystem implements System {
         if (cameras.length === 0) return;
 
         const [entity, c, t] = cameras[0];
-        c.camera.position.copy(t.position);
-        c.camera.quaternion.copy(t.rotation);
 
         this.resize(c.camera);
         this.renderer.render(this.scene, c.camera);

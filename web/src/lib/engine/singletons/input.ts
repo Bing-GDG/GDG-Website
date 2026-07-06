@@ -1,5 +1,8 @@
 import { Vector2 } from "three";
 
+/// Cursor lock modes, mirrors unitys CursorLockMode.
+export type LockState = "None" | "Locked";
+
 /// Global input singleton that kinda mirrors unitys input api
 export class Input {
     private static _instance: Input | null = null;
@@ -90,6 +93,19 @@ export class Input {
     /// Mouse movement since the last tick
     public get mouseDelta(): Vector2 {
         return this._mouseDelta.clone();
+    }
+
+    /// Lock the cursor
+    public lock(state: LockState) {
+        if (typeof document === "undefined") return;
+
+        if (state !== "Locked") {
+            document.exitPointerLock();
+            return;
+        }
+
+        const req = document.body.requestPointerLock() as unknown;
+        if (req instanceof Promise) req.catch(() => {});
     }
 
     /// World calls this at the end of every tick
