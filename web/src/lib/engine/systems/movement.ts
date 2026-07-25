@@ -1,8 +1,8 @@
 import { Euler, Vector3 } from "three";
-import type { Transform3d } from "../components/general";
-import type { ThreeCamera } from "../components/graphics";
-import type { RigidBody } from "../components/physics";
-import type { MainPlayer } from "../components/player";
+import { Transform3d } from "../components/general";
+import { ThreeCamera } from "../components/graphics";
+import { RigidBody } from "../components/physics";
+import { MainPlayer } from "../components/player";
 import type { System, World } from "../mecs";
 
 const MOVE_SPEED_INFLATION = 2;
@@ -19,8 +19,7 @@ export class MovementSystem implements System {
         // input -> movement
         const input = world.input;
 
-        const viewResult = world.view<[MainPlayer, Transform3d, ThreeCamera, RigidBody]>
-            ("MainPlayer", "Transform3d", "ThreeCamera", "RigidBody");
+        const viewResult = world.view(MainPlayer, Transform3d, ThreeCamera, RigidBody);
 
         if (viewResult.length === 0) return;
 

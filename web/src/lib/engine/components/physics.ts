@@ -1,5 +1,8 @@
+import { component } from "../type_magic";
+
 export type BodyType = "dynamic" | "fixed" | "kinematicPosition" | "kinematicVelocity";
 
+/// Authored in unmodified units
 export type ColliderShape =
     | { kind: "cuboid", hx: number, hy: number, hz: number }
     | { kind: "ball", radius: number }
@@ -21,3 +24,5 @@ export type RigidBody = {
     angularVelocity?: { x: number, y: number, z: number },
     dontSyncRotation?: boolean
 }
+
+export const RigidBody = component<RigidBody>("RigidBody");

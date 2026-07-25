@@ -1,9 +1,11 @@
 import type * as RAPIER from "@dimforge/rapier3d-compat";
-import type { Transform3d } from "../components/general";
-import type { RigidBody } from "../components/physics";
+import { Transform3d } from "../components/general";
+import { RigidBody, type ColliderShape } from "../components/physics";
 import type { System, World } from "../mecs";
 
 type Vec3 = { x: number, y: number, z: number };
+
+const UNIT_SCALE: Vec3 = { x: 1, y: 1, z: 1 };
 
 type SyncedProps = {
     // bounciness
@@ -26,7 +28,8 @@ type BodyHandle = {
     synced: SyncedProps,
     pose: Pose,
     velSnap: Vec3,
-    angSnap: Vec3
+    angSnap: Vec3,
+    scaleSnap: Vec3
 };
 
 export class PhysicsSystem implements System {
@@ -53,11 +56,11 @@ export class PhysicsSystem implements System {
     async init(world: World): Promise<void> {
         this.ecs = world;
 
-        world.onAttach<RigidBody>("RigidBody", (entity, rb) => {
+        world.onAttach(RigidBody, (entity, rb) => {
             if (this.physicsWorld) this.realize(entity, rb);
         });
 
-        world.onDetach<RigidBody>("RigidBody", (entity) => {
+        world.onDetach(RigidBody, (entity) => {
             const h = this.handles.get(entity);
             if (h && this.physicsWorld) {
                 this.physicsWorld.removeRigidBody(h.body);
@@ -73,7 +76,7 @@ export class PhysicsSystem implements System {
         this.rapier = rapier;
         this.physicsWorld = new rapier.World(this.gravity);
 
-        for (const [entity, rb] of this.ecs.view<[RigidBody]>("RigidBody"))
+        for (const [entity, rb] of this.ecs.view(RigidBody))
             this.realize(entity, rb);
     }
 
@@ -82,7 +85,7 @@ export class PhysicsSystem implements System {
         const rapier = this.rapier!;
         const world = this.physicsWorld!;
 
-        const t = this.ecs!.view<[Transform3d]>("Transform3d").find(([e]) => e === entity)?.[1];
+        const t = this.ecs!.view(Transform3d).find(([e]) => e === entity)?.[1];
 
         let bodyDesc: RAPIER.RigidBodyDesc;
         switch (rb.type) {
@@ -103,23 +106,15 @@ export class PhysicsSystem implements System {
         if (rb.velocity) bodyDesc.setLinvel(rb.velocity.x, rb.velocity.y, rb.velocity.z);
         if (rb.angularVelocity) bodyDesc.setAngvel({ x: rb.angularVelocity.x, y: rb.angularVelocity.y, z: rb.angularVelocity.z });
 
-        let colliderDesc: RAPIER.ColliderDesc | null;
-        switch (rb.shape.kind) {
-            case "cuboid": colliderDesc = rapier.ColliderDesc.cuboid(rb.shape.hx, rb.shape.hy, rb.shape.hz); break;
-            case "ball": colliderDesc = rapier.ColliderDesc.ball(rb.shape.radius); break;
-            case "capsule": colliderDesc = rapier.ColliderDesc.capsule(rb.shape.halfHeight, rb.shape.radius); break;
-            case "trimesh": colliderDesc = rapier.ColliderDesc.trimesh(rb.shape.vertices, rb.shape.indices); break;
-            case "convexHull": colliderDesc = rapier.ColliderDesc.convexHull(rb.shape.points); break;
-        }
+        const scale = t ? t.scale : UNIT_SCALE;
+        const colliderDesc = this.describeCollider(rb.shape, scale);
 
         if (!colliderDesc) {
             console.error("physics: failed to build collider for entity", entity, rb.shape.kind);
             return;
         }
 
-        if (rb.restitution !== undefined) colliderDesc.setRestitution(rb.restitution);
-        if (rb.friction !== undefined) colliderDesc.setFriction(rb.friction);
-        if (rb.density !== undefined) colliderDesc.setDensity(rb.density);
+        this.applyColliderProps(colliderDesc, rb);
 
         const body = world.createRigidBody(bodyDesc);
         const collider = world.createCollider(colliderDesc, body);
@@ -141,8 +136,47 @@ export class PhysicsSystem implements System {
                 ? { px: t.position.x, py: t.position.y, pz: t.position.z, rx: t.rotation.x, ry: t.rotation.y, rz: t.rotation.z, rw: t.rotation.w }
                 : { px: 0, py: 0, pz: 0, rx: 0, ry: 0, rz: 0, rw: 1 },
             velSnap: rb.velocity ? { x: rb.velocity.x, y: rb.velocity.y, z: rb.velocity.z } : { x: 0, y: 0, z: 0 },
-            angSnap: rb.angularVelocity ? { x: rb.angularVelocity.x, y: rb.angularVelocity.y, z: rb.angularVelocity.z } : { x: 0, y: 0, z: 0 }
+            angSnap: rb.angularVelocity ? { x: rb.angularVelocity.x, y: rb.angularVelocity.y, z: rb.angularVelocity.z } : { x: 0, y: 0, z: 0 },
+            scaleSnap: { x: scale.x, y: scale.y, z: scale.z }
         });
+    }
+
+    // shapes are authored in unmodified units a nd scaled by transform's world scale.
+    private describeCollider(shape: ColliderShape, s: Vec3): RAPIER.ColliderDesc | null {
+        const rapier = this.rapier!;
+
+        switch (shape.kind) {
+            case "cuboid":
+                return rapier.ColliderDesc.cuboid(shape.hx * s.x, shape.hy * s.y, shape.hz * s.z);
+            case "ball":
+                return rapier.ColliderDesc.ball(shape.radius * Math.max(s.x, s.y, s.z));
+            case "capsule":
+                return rapier.ColliderDesc.capsule(shape.halfHeight * s.y, shape.radius * Math.max(s.x, s.z));
+            case "trimesh":
+                return rapier.ColliderDesc.trimesh(scaleVertices(shape.vertices, s), shape.indices);
+            case "convexHull":
+                return rapier.ColliderDesc.convexHull(scaleVertices(shape.points, s));
+        }
+    }
+
+    private applyColliderProps(desc: RAPIER.ColliderDesc, rb: RigidBody): void {
+        if (rb.restitution !== undefined) desc.setRestitution(rb.restitution);
+        if (rb.friction !== undefined) desc.setFriction(rb.friction);
+        if (rb.density !== undefined) desc.setDensity(rb.density);
+    }
+
+    private syncScale(h: BodyHandle, rb: RigidBody, t: Transform3d): void {
+        const s = t.scale;
+        if (s.x === h.scaleSnap.x && s.y === h.scaleSnap.y && s.z === h.scaleSnap.z) return;
+
+        h.scaleSnap.x = s.x; h.scaleSnap.y = s.y; h.scaleSnap.z = s.z;
+
+        const desc = this.describeCollider(rb.shape, s);
+        if (!desc) return;
+
+        this.applyColliderProps(desc, rb);
+        this.physicsWorld!.removeCollider(h.collider, false);
+        h.collider = this.physicsWorld!.createCollider(desc, h.body);
     }
 
     // kinda hacky property syncing but this lets us modify component properties at runtime. in pure ecs fashion the simulation would read frmo the component directly but we rely on rapier so ggs
@@ -234,11 +268,12 @@ export class PhysicsSystem implements System {
     tick(world: World, dt: number): void {
         if (!this.physicsWorld) return;
 
-        for (const [entity, rb, t] of world.view<[RigidBody, Transform3d]>("RigidBody", "Transform3d")) {
+        for (const [entity, rb, t] of world.view(RigidBody, Transform3d)) {
             const h = this.handles.get(entity);
             if (!h) continue;
 
             this.sync(h, rb);
+            this.syncScale(h, rb, t);
             this.pullPose(h, t);
             this.pullVelocity(h, rb);
         }
@@ -247,7 +282,7 @@ export class PhysicsSystem implements System {
         this.physicsWorld.timestep = dt;
         this.physicsWorld.step();
 
-        for (const [entity, rb, t] of world.view<[RigidBody, Transform3d]>("RigidBody", "Transform3d")) {
+        for (const [entity, rb, t] of world.view(RigidBody, Transform3d)) {
             const h = this.handles.get(entity);
             if (!h || h.body.isFixed()) continue;
 
@@ -255,4 +290,16 @@ export class PhysicsSystem implements System {
             this.pushVelocity(h, rb);
         }
     }
+}
+
+function scaleVertices(vertices: Float32Array, s: Vec3): Float32Array {
+    if (s.x === 1 && s.y === 1 && s.z === 1) return vertices;
+
+    const out = new Float32Array(vertices.length);
+    for (let i = 0; i < vertices.length; i += 3) {
+        out[i] = vertices[i] * s.x;
+        out[i + 1] = vertices[i + 1] * s.y;
+        out[i + 2] = vertices[i + 2] * s.z;
+    }
+    return out;
 }

@@ -1,8 +1,8 @@
 import { Euler, Quaternion, Vector3 } from "three";
-import type { Transform3d } from "../components/general";
-import type { ThreeCamera } from "../components/graphics";
+import { Transform3d } from "../components/general";
+import { ThreeCamera } from "../components/graphics";
 import type { System, World } from "../mecs";
-import type { MainPlayer } from "../components/player";
+import { MainPlayer } from "../components/player";
 
 const PITCH_LIMIT = Math.PI / 2 - 0.01;
 
@@ -17,7 +17,7 @@ export class CameraSystem implements System {
     tick(world: World, dt: number): void {
         const input = world.input;
 
-        const viewResult = world.view<[MainPlayer, ThreeCamera, Transform3d]>("MainPlayer", "ThreeCamera", "Transform3d");
+        const viewResult = world.view(MainPlayer, ThreeCamera, Transform3d);
 
         if (viewResult.length === 0) return;
 
