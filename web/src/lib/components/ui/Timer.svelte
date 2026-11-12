@@ -14,7 +14,7 @@
 
     let units = $derived([
         { label: "days", value: Math.floor(timeLeft / DAY_MS) },
-        { label: "hours", value: Math.floor((timeLeft % DAY_MS) / HOUR_MS) },
+        { label: "hrs", value: Math.floor((timeLeft % DAY_MS) / HOUR_MS) },
         { label: "min", value: Math.floor((timeLeft % HOUR_MS) / MINUTE_MS) },
         { label: "sec", value: Math.floor((timeLeft % MINUTE_MS) / SECOND_MS) },
     ]);
@@ -24,15 +24,19 @@
     }
 </script>
 
-<!-- tabular-nums gives every digit the same width so the countdown does not shift as it ticks -->
-<div class={cn("flex items-start justify-center gap-2 tabular-nums", className)} role="timer">
+<div class={cn("flex items-start gap-[0.2em] font-bold leading-none", className)} role="timer">
     {#each units as unit, i}
         {#if i > 0}
-            <span aria-hidden="true">:</span>
+            <span class="text-muted-foreground/50" aria-hidden="true">:</span>
         {/if}
-        <div class="flex flex-col items-center">
-            <span>{pad(unit.value)}</span>
-            <span class="text-xs font-medium uppercase tracking-widest opacity-60">{unit.label}</span>
+        <div class="flex flex-col items-center gap-2">
+            <span class="flex">
+                <!-- Each digit gets a fixed-width cell so the countdown does not shift as it ticks. -->
+                {#each [...pad(unit.value)] as digit}
+                    <span class="inline-block w-[0.66em] text-center">{digit}</span>
+                {/each}
+            </span>
+            <span class="label-mono text-muted-foreground">{unit.label}</span>
         </div>
     {/each}
 </div>

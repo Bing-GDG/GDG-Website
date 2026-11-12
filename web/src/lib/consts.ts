@@ -1,6 +1,8 @@
 import { parseDateTime } from "@internationalized/date";
 import type { Event, ItchGame } from "./components/ui/types";
 
+export const GDG_NAME = "Game Development Group";
+
 export const FEATURED_GAMES: ItchGame[] = [
     {
         id: 2364408,
@@ -9,17 +11,16 @@ export const FEATURED_GAMES: ItchGame[] = [
 ]
 
 /* gamejam information */
-
-// Jam times are Binghamton wall-clock times. Converting them in this zone gives every visitor,
-// and the server, the same countdown target regardless of their own time zone.
+// ts aint changing bro
 export const GAMEJAM_TIME_ZONE = "America/New_York";
 
-/** Converts a Binghamton wall-clock time such as "2026-11-13T17:30" to the instant it names. */
 function jamTime(localDateTime: string): Date {
     return parseDateTime(localDateTime).toDate(GAMEJAM_TIME_ZONE);
 }
 
-export const GAMEJAM_TITLE = "Binghamton Game Jam 6";
+export const GAMEJAM_NAME = "Binghamton Game Jam";
+export const GAMEJAM_EDITION = 7;
+export const GAMEJAM_TITLE = `${GAMEJAM_NAME} ${GAMEJAM_EDITION}`;
 export const GAMEJAM_LOCATION = "Innovation Lab";
 
 // The jam starts at the theme announcement and ends at the submission deadline.
@@ -118,6 +119,7 @@ export const GAMEJAM_SCHEDULE_NOTES = [
     "The Quiet Cup is beside the Library North Cafe in the Library Tower, right outside the Innovation Lab."
 ];
 
+// TODO! update
 export const GAMEJAM_PRIZE_CATEGORIES = ["Art & Design", "Gameplay & Feel", "Creativity & Innovation"];
 
 export const ITCHIO_URL = "https://itch.io/jam/gdg-game-jam-6";
