@@ -1,22 +1,23 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import { Card } from "./card";
-import type { Event } from "./types";
+    import type { Event } from "./types";
     import { Progress } from "./progress";
+    import { now } from "$lib/clock";
+    import { dayKey, formatDay, formatTime } from "$lib/format";
 
-    const { events }: { events: Event[] } = $props();
+    // timeZone sets which calendar day each event falls on and the times shown, so every visitor sees venue times.
+    const { events, timeZone }: { events: Event[]; timeZone: string } = $props();
 
-    // sorted by days
-    let days: Event[][] = $derived.by(() => {
-        const sorted = events.toSorted((a, b) => a.start.getTime() - b.start.getTime());
+    const sorted = $derived(events.toSorted((a, b) => a.start.getTime() - b.start.getTime()));
 
+    // Events grouped by calendar day, in start order.
+    const days: Event[][] = $derived.by(() => {
         const grouped: Event[][] = [];
-        let currentDay: Date | null = null;
+        let currentKey: string | null = null;
         for (const event of sorted) {
-            if (event.phantom) continue;
-
-            if (!currentDay || event.start.toDateString() !== currentDay.toDateString()) {
-                currentDay = event.start;
+            const key = dayKey(event.start, timeZone);
+            if (key !== currentKey) {
+                currentKey = key;
                 grouped.push([]);
             }
             grouped[grouped.length - 1].push(event);
@@ -24,102 +25,73 @@ import type { Event } from "./types";
         return grouped;
     });
 
-    // the time updating
-    let now = $state(new Date());
-    onMount(() => {
-        const id = setInterval(() => {
-            now = new Date();
-        }, 1000 * 0.1); // update every 0.1s do not underestimate modern computing power 
+    const time = $derived(now());
+    const todayKey = $derived(dayKey(time, timeZone));
 
-        return () => clearInterval(id);
-    });
+    // Events with an end time that are in progress.
+    const activeEvents = $derived(
+        sorted.filter((event): event is Event & { end: Date } =>
+            event.end !== undefined && time >= event.start && time < event.end
+        )
+    );
 
-    function isSameDay(a: Date, b: Date) {
-        return (
-            a.getFullYear() === b.getFullYear() &&
-            a.getMonth() === b.getMonth() &&
-            a.getDate() === b.getDate()
-        );
-    }
-
-    let activeDayIndex = $derived.by(() => {
-        return days.findIndex((day) => isSameDay(day[0].start, now));
-    });
-
-    // events that are currently ongoing
-    let activeEvents: Event[] = $derived.by(() => {
-        const sorted = events.toSorted((a, b) => a.start.getTime() - b.start.getTime());
-        return sorted.filter((event) => {
-            const eventEnd = event.end;
-            if (!eventEnd) return false; // its an 'instant' or marker type event
-            return now >= event.start && now < eventEnd;
-        });
-    });
-
-    // util
-    function formatTime(d: Date, includeDate: boolean = false): string {
-        const isOnHour = d.getMinutes() === 0;
-
-        return d.toLocaleTimeString([], {
-            hour: "numeric",
-            ...(isOnHour ? {} : { minute: "2-digit" }),
-            ...(includeDate ? { month: "short", day: "numeric" } : {})
-        });
+    // An event without an end time is a single moment, so it counts as past once it starts.
+    function isPast(event: Event): boolean {
+        return time >= (event.end ?? event.start);
     }
 </script>
 
 <!-- progress bars for active events -->
-
 {#if activeEvents.length > 0}
-
-<div class="flex flex-col mb-4">
-    <p class="text-5xl font-bold text-center"></p>
-    {#each activeEvents as event}
-        {@const donePercent = (now.getTime() - event.start.getTime()) / ((event.end!.getTime()) - event.start.getTime())}
-        <div>
-            <div class="flex md:flex-row flex-col md:items-center ">
-                <p class="text-3xl font-semibold">{event.title}</p>
-                {#if event.loc} 
-                    <p class="text-xl brightness-75 italic ml-2">@ {event.loc}</p>
-                {/if}
-            </div>
-            <Progress class="h-5 mt-2 border border-muted-foreground bg-transparent rounded-sm" value={donePercent * 100}/>
-            <div class="flex flex-row items-center text-xl brightness-75 italic mt-1">
-                <p>{formatTime(event.start, true)}</p>
-                <p class="ml-auto">{formatTime(event.end!, true)}</p>
-            </div>
-        </div>
-    {/each}
-</div>
-
-{/if}
-
-<Card class="border border-foreground/75 flex md:flex-row flex-col justify-between">
-    {#each days as day, i}
-        <div class="flex flex-col flex-1">
-            <div class="h-full {i === 0 ? '' : 'md:border-l border-foreground/75'} px-4 py-2">
-                <div class="{i !== activeDayIndex ? 'brightness-70' : ''}">
-                    <h2 class="text-2xl font-bold mb-2">{day[0].start.toLocaleDateString([], {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric"
-                    })}</h2>
-                    {#each day as event}
-                        <div class="mb-2">
-                            <p class="text-lg">{event.title}</p>
-                            <p class="text-sm text-foreground/75">
-                                {formatTime(event.start)}
-                                {#if event.end && event.end !== event.start}
-                                    - {formatTime(event.end)}
-                                {/if}
-                                {#if event.loc && event.loc !== ""}
-                                    @ {event.loc}
-                                {/if}
-                            </p>
-                        </div>
-                    {/each}
+    <section class="flex flex-col gap-6 mb-4" aria-labelledby="schedule-now">
+        <h3 id="schedule-now" class="text-sm font-semibold uppercase tracking-[0.3em] text-primary">Happening Now</h3>
+        {#each activeEvents as event}
+            {@const doneFraction = (time.getTime() - event.start.getTime()) / (event.end.getTime() - event.start.getTime())}
+            <div>
+                <div class="flex md:flex-row flex-col md:items-center">
+                    <p class="text-3xl font-semibold">{event.title}</p>
+                    {#if event.loc}
+                        <p class="text-xl brightness-75 italic md:ml-2">@ {event.loc}</p>
+                    {/if}
+                </div>
+                <Progress class="h-5 mt-2 border border-muted-foreground bg-transparent rounded-sm" value={doneFraction * 100} aria-label="{event.title} progress" />
+                <div class="flex flex-row items-center text-xl brightness-75 italic mt-1">
+                    <p>{formatTime(event.start, timeZone, true)}</p>
+                    <p class="ml-auto">{formatTime(event.end, timeZone, true)}</p>
                 </div>
             </div>
+        {/each}
+    </section>
+{/if}
+
+<Card class="border border-foreground/75 flex md:flex-row flex-col justify-between py-0 gap-0">
+    {#each days as day, i}
+        {@const isToday = dayKey(day[0].start, timeZone) === todayKey}
+        <div class="flex-1 px-4 py-4 {i === 0 ? '' : 'border-t md:border-t-0 md:border-l border-foreground/75'}">
+            <h3 class="mb-2">
+                <span class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em]">
+                    <span class="opacity-75">Day {i + 1}</span>
+                    {#if isToday}
+                        <!-- leading-none keeps the badge as tall as the label so the date lines up across columns -->
+                        <span class="rounded-full bg-primary px-2 py-0.5 leading-none tracking-wider text-primary-foreground">Today</span>
+                    {/if}
+                </span>
+                <span class="block text-2xl font-bold {isToday ? 'text-primary' : ''}">{formatDay(day[0].start, timeZone)}</span>
+            </h3>
+            {#each day as event}
+                <div class="mb-3 transition-opacity {isPast(event) ? 'opacity-50' : ''}">
+                    <p class="text-lg">{event.title}</p>
+                    <p class="text-sm text-foreground/75">
+                        {formatTime(event.start, timeZone)}{#if event.end}&nbsp;– {formatTime(event.end, timeZone)}{/if}
+                        {#if event.loc}
+                            @ {event.loc}
+                        {/if}
+                    </p>
+                    {#if event.desc}
+                        <p class="mt-1 text-sm text-foreground/60">{event.desc}</p>
+                    {/if}
+                </div>
+            {/each}
         </div>
     {/each}
 </Card>
