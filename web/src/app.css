@@ -1,5 +1,6 @@
+/* Must stay first: browsers ignore an @import that follows other rules, and the tailwindcss import expands to rules. */
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&family=JetBrains+Mono:wght@400..700&family=Inter:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
 
 @import "tw-animate-css";
 
@@ -42,24 +43,26 @@
 }
 
 .dark {
-  --background: oklch(0.1867 0.0428 240.07); 
-  --foreground: oklch(0.789 0.1125 304.18);
-  --card: oklch(0.3273 0.034 230.85);
-  --card-foreground: oklch(0.8533 0.1022 180.6);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: #97cee5;
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
+  color-scheme: dark;
+  /* The accent is the lime of the GDG slime logo, and the border is a darker shade of its outline. */
+  --background: #070908; 
+  --foreground: #e7ece6;
+  --card: #0c100e;
+  --card-foreground: #e7ece6;
+  --popover: #0c100e;
+  --popover-foreground: #e7ece6;
+  --primary: #b5d257;
+  --primary-foreground: #0a0d0b;
+  --secondary: #161b19;
+  --secondary-foreground: #e7ece6;
+  --muted: #161b19;
+  --muted-foreground: #8d9891;
+  --accent: #161b19;
+  --accent-foreground: #e7ece6;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
+  --border: #28312d;
+  --input: #28312d;
+  --ring: #b5d257;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -79,6 +82,8 @@
   --spacing-layout: var(--layout-gap);
   --font-inter: 'Inter', sans-serif;
   --font-lora: 'Lora', serif;
+  --font-oxanium: 'Oxanium', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -121,7 +126,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-background text-foreground font-oxanium;
   }
 }
 
@@ -185,4 +190,57 @@
 	&::-webkit-scrollbar {
 		display: none;
   }
+}
+
+/* Square panel with a 1px border and accent brackets on two opposite corners. */
+@utility panel {
+	position: relative;
+	border: 1px solid var(--border);
+	background: var(--card);
+	&::before,
+	&::after {
+		content: "";
+		position: absolute;
+		width: 0.5rem;
+		height: 0.5rem;
+		pointer-events: none;
+  }
+	&::before {
+		top: -1px;
+		left: -1px;
+		border-top: 2px solid var(--primary);
+		border-left: 2px solid var(--primary);
+  }
+	&::after {
+		left: -1px;
+		bottom: -1px;
+		border-bottom: 2px solid var(--primary);
+		border-left: 2px solid var(--primary);
+  }
+}
+
+/* Small uppercase label set in the mono font. */
+@utility label-mono {
+	font-family: var(--font-mono);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+}
+
+/* Cuts a bar into --segments equal blocks. Set --segments on the element. */
+@utility bar-segments {
+	mask-image: linear-gradient(90deg, #000 0 calc(100% - 3px), transparent 0);
+	mask-size: calc(100% / var(--segments, 32)) 100%;
+	mask-repeat: repeat-x;
+}
+
+/* Faint square grid. --grid-tile is the size of one square. */
+@utility bg-grid {
+	--grid-tile: 2.5rem;
+	background-image:
+		linear-gradient(to right, color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px),
+		linear-gradient(to bottom, color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px);
+	background-size: var(--grid-tile) var(--grid-tile);
 }

@@ -1,6 +1,7 @@
 // mini ecs implementation im so createive
 
 import { Input } from "./singletons/input";
+import { idOf, type Component, type StoredAll } from "./type_magic";
 
 type Entity = number;
 
@@ -93,11 +94,10 @@ export class World {
     // I HATE TYPESCRIPT
     // despite having a type system theres nothing useful i can do with it here?
     // i guess man
-    /// Order of components in the variadic type array must match the order of the component names
-    /// provided in the arguments.
-    public view<T extends unknown[]>(...names: string[]): [Entity, ...T][] {
-        // TODO!
-        if (names.length === 0) return [];
+    public view<C extends Component<any>[]>(...components: C): [Entity, ...StoredAll<C>][] {
+        if (components.length === 0) return [];
+
+        const names = components.map(idOf);
 
         const intersection = names
             .map(name => this.entityLookup.get(name) ?? new Set<Entity>())
@@ -105,18 +105,19 @@ export class World {
 
         return Array.from(intersection).map(entity => {
             const store = this.entities.get(entity)!;
-            return [entity, ...names.map(name => store[name])] as [Entity, ...T];
+            return [entity, ...names.map(name => store[name])] as [Entity, ...StoredAll<C>];
         });
     }
-    
-    // I HATE TYPESCRIPT
-    public attach<T>(entity: Entity, name: string, component: T) {
-        let store = this.entities.get(entity) 
+
+    public attach<T>(entity: Entity, id: Component<T>, component: T) {
+        const name = idOf(id);
+
+        let store = this.entities.get(entity)
         ?? this.entities.set(entity, {}).get(entity)!;
-        
+
         store[name] = component;
 
-        if (!this.entityLookup.has(name)) 
+        if (!this.entityLookup.has(name))
             this.entityLookup.set(name, new Set());
 
         this.entityLookup.get(name)!.add(entity);
@@ -124,10 +125,11 @@ export class World {
         for (const f of Object.values(this.callbacks.oa[name] ?? {}))
             f(entity, component)
     }
-    
-    // I HATE TYPESCRIPT
-    public detach<T>(entity: Entity, name: string) {
-        let store = this.entities.get(entity) 
+
+    public detach(entity: Entity, id: Component<any>) {
+        const name = idOf(id);
+
+        let store = this.entities.get(entity)
             ?? this.entities.set(entity, {}).get(entity)!;
 
         for (const f of Object.values(this.callbacks.od[name] ?? {}))
@@ -135,27 +137,29 @@ export class World {
 
         if (store[name]) delete store[name];
 
-        if (this.entityLookup.has(name)) 
+        if (this.entityLookup.has(name))
             this.entityLookup.get(name)!.delete(entity);
     }
 
-    public onAttach<T>(name: string, callback: (entity: Entity, component: T) => any): CallbackHandle {
+    public onAttach<T>(id: Component<T>, callback: (entity: Entity, component: T) => any): CallbackHandle {
+        const name = idOf(id);
         const i = ++this.uniqueCounter;
 
         (this.callbacks.oa[name] ??= {})[i] = callback;
 
         return new CallbackHandle(() => {
-           if (this.callbacks.oa[name][i]) delete this.callbacks.oa[name][i]; 
+           if (this.callbacks.oa[name][i]) delete this.callbacks.oa[name][i];
         });
     }
 
-    public onDetach<T>(name: string, callback: (entity: Entity, component: T) => any): CallbackHandle {
+    public onDetach<T>(id: Component<T>, callback: (entity: Entity, component: T) => any): CallbackHandle {
+        const name = idOf(id);
         const i = ++this.uniqueCounter;
 
         (this.callbacks.od[name] ??= {})[i] = callback;
 
         return new CallbackHandle(() => {
-           if (this.callbacks.od[name][i]) delete this.callbacks.od[name][i]; 
+           if (this.callbacks.od[name][i]) delete this.callbacks.od[name][i];
         });
     }
 

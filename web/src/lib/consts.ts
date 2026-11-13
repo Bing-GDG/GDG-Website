@@ -1,17 +1,7 @@
+import { parseDateTime } from "@internationalized/date";
 import type { Event, ItchGame } from "./components/ui/types";
 
-const JAN = 0;
-const FEB = 1;
-const MAR = 2;
-const APR = 3;
-const MAY = 4;
-const JUN = 5;
-const JUL = 6;
-const AUG = 7;
-const SEP = 8;
-const OCT = 9;
-const NOV = 10;
-const DEC = 11;
+export const GDG_NAME = "Game Development Group";
 
 export const FEATURED_GAMES: ItchGame[] = [
     {
@@ -21,141 +11,119 @@ export const FEATURED_GAMES: ItchGame[] = [
 ]
 
 /* gamejam information */
+// ts aint changing bro
+export const GAMEJAM_TIME_ZONE = "America/New_York";
+
+function jamTime(localDateTime: string): Date {
+    return parseDateTime(localDateTime).toDate(GAMEJAM_TIME_ZONE);
+}
+
+export const GAMEJAM_NAME = "Binghamton Game Jam";
+export const GAMEJAM_EDITION = 7;
+export const GAMEJAM_TITLE = `${GAMEJAM_NAME} ${GAMEJAM_EDITION}`;
+export const GAMEJAM_LOCATION = "Innovation Lab";
+
+// The jam starts at the theme announcement and ends at the submission deadline.
+export const GAMEJAM_START = jamTime("2026-11-13T17:30");
+export const GAMEJAM_END = jamTime("2026-11-15T18:00");
 
 export const GAMEJAM_EVENTS: Event[] = [
-    // Thursday 4/9
+    // Friday 11/13
     {
-        start: new Date(2026, APR, 9, 18, 0),
-        title: "Game Jam Mixer",
-        loc: "UU103"
-    },
-
-    // Friday 4/10
-    {
-        start: new Date(2026, APR, 10, 19, 0),
-        end: new Date(2026, APR, 12, 19, 0),
-        title: "Time Remaining",
-        phantom: true
-    },
-
-    {
-        start: new Date(2026, APR, 10, 17, 0),
-        end: new Date(2026, APR, 10, 18, 0),
-        title: "Unity Multiplayer Workshop",
-        desc: "Host: Joseph",
-        loc: "Innovation Lab"
-    },
-    {
-        start: new Date(2026, APR, 10, 18, 0),
-        title: "Dinner",
-        desc: "Please fill out the Meal Check-In Form when grabbing food.",
-        loc: "Jazzman's Room"
-    },
-    {
-        start: new Date(2026, APR, 10, 18, 30),
+        start: jamTime("2026-11-13T17:15"),
         title: "Check-In",
         loc: "Innovation Lab"
     },
     {
-        start: new Date(2026, APR, 10, 19, 0),
-        end: new Date(2026, APR, 10, 19, 30),
-        title: "Opening Ceremony",
-        desc: "The theme is announced here..",
+        start: GAMEJAM_START,
+        title: "Opening Ceremony & Theme Announcement",
+        desc: "Afterwards, individuals searching for a team are paired with groups based on project interests, and teams can start working.",
         loc: "Innovation Lab"
     },
     {
-        start: new Date(2026, APR, 10, 19, 30),
-        end: new Date(2026, APR, 10, 20, 0),
-        title: "Team Formation",
-        desc: "Individuals looking for teams are paired based on project interests",
-        loc: "Innovation Lab"
-    },
-    {
-        start: new Date(2026, APR, 10, 19, 30),
-        end: new Date(2026, APR, 10, 20, 0),
-        title: "GitHub Workshop",
-        desc: "Host: Kevin",
-        loc: "Innovation Lab"
-    },
-    {
-        start: new Date(2026, APR, 10, 23, 0),
-        title: "Rooms Close",
-        loc: "Innovation Lab",
-    },
-
-    // Saturday 4/11
-    {
-        start: new Date(2026, APR, 11, 8, 0),
-        title: "Rooms Open",
-        loc: "Innovation Lab"
-    },
-    {
-        start: new Date(2026, APR, 11, 10, 0),
-        title: "Breakfast",
-        desc: "Please fill out the Meal Check-In Form when grabbing food.",
-        loc: "Jazzman's Room"
-    },
-    {
-        start: new Date(2026, APR, 11, 14, 0),
-        title: "Lunch",
-        desc: "Please fill out the Meal Check-In Form when grabbing food.",
-        loc: "Jazzman's Room"
-    },
-    {
-        start: new Date(2026, APR, 11, 18, 0),
+        start: jamTime("2026-11-13T18:00"),
         title: "Dinner",
-        desc: "Please fill out the Meal Check-In Form when grabbing food.",
-        loc: "Jazzman's Room"
+        loc: "Quiet Cup"
     },
     {
-        start: new Date(2026, APR, 11, 23, 0),
+        start: jamTime("2026-11-13T23:00"),
         title: "Rooms Close",
         loc: "Innovation Lab"
     },
 
-    // Sunday 4/12
+    // Saturday 11/14
     {
-        start: new Date(2026, APR, 12, 8, 0),
+        start: jamTime("2026-11-14T08:00"),
         title: "Rooms Open",
         loc: "Innovation Lab"
     },
     {
-        start: new Date(2026, APR, 12, 10, 0),
+        start: jamTime("2026-11-14T10:00"),
         title: "Breakfast",
-        desc: "Please fill out the Meal Check-In Form when grabbing food.",
-        loc: "Jazzman's Room"
+        loc: "Quiet Cup"
     },
     {
-        start: new Date(2026, APR, 12, 14, 0),
+        start: jamTime("2026-11-14T14:00"),
         title: "Lunch",
-        desc: "Please fill out the Meal Check-In Form when grabbing food.",
-        loc: "Jazzman's Room"
+        loc: "Quiet Cup"
     },
     {
-        start: new Date(2026, APR, 12, 19, 0),
-        title: "Submissions Close",
+        start: jamTime("2026-11-14T18:00"),
+        title: "Dinner",
+        loc: "Quiet Cup"
+    },
+    {
+        start: jamTime("2026-11-14T23:00"),
+        title: "Rooms Close",
+        loc: "Innovation Lab"
+    },
+
+    // Sunday 11/15
+    {
+        start: jamTime("2026-11-15T08:00"),
+        title: "Rooms Open",
         loc: "Innovation Lab"
     },
     {
-        start: new Date(2026, APR, 12, 19, 0),
-        title: "Dinner",
-        desc: "Please fill out the Meal Check-In Form when grabbing food.",
-        loc: "Jazzman's Room"
+        start: jamTime("2026-11-15T10:00"),
+        title: "Breakfast",
+        loc: "Quiet Cup"
     },
     {
-        start: new Date(2026, APR, 12, 19, 45),
-        end: new Date(2026, APR, 12, 21, 0),
+        start: jamTime("2026-11-15T14:00"),
+        title: "Lunch",
+        desc: "Catered by Wegmans.",
+        loc: "Quiet Cup"
+    },
+    {
+        start: GAMEJAM_END,
+        title: "Submissions Due",
+        desc: "Submit your game to the itch.io jam page or the Alternate Submission Form."
+    },
+    {
+        start: jamTime("2026-11-15T18:00"),
+        title: "Dinner",
+        loc: "Quiet Cup"
+    },
+    {
+        start: jamTime("2026-11-15T18:30"),
+        end: jamTime("2026-11-15T20:00"),
         title: "Closing Ceremony",
-        desc: "Participant Presentations, Judging, and Awards",
+        desc: "Participants present, judges vote and winners are awarded.",
         loc: "Innovation Lab"
     }
 ];
 
-export const GAMEJAM_START = new Date(2026, APR, 10, 19, 0);
-export const GAMEJAM_END = new Date(2026, APR, 12, 19, 0);
+export const GAMEJAM_SCHEDULE_NOTES = [
+    "Please fill out the Meal Check-In Form when grabbing food.",
+    "The Quiet Cup is beside the Library North Cafe in the Library Tower, right outside the Innovation Lab."
+];
+
+// TODO! update
+export const GAMEJAM_PRIZE_CATEGORIES = ["Art & Design", "Gameplay & Feel", "Creativity & Innovation"];
 
 export const ITCHIO_URL = "https://itch.io/jam/gdg-game-jam-6";
 
-export const TEAM_RESIGRATION_FORM_URL = "https://docs.google.com/forms/d/1ALromMlqgjrIubssrG1lZFDZkR4tqsSsjqsDqNCz4K0";
+export const TEAM_REGISTRATION_FORM_URL = "https://docs.google.com/forms/d/1ALromMlqgjrIubssrG1lZFDZkR4tqsSsjqsDqNCz4K0";
 
-export const REGISTER_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeZyN-aS0yIXLK14hsVUUeYtptEpYLX3WdbpGGVQR3_X-FaJg/viewform"
+export const REGISTER_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeZyN-aS0yIXLK14hsVUUeYtptEpYLX3WdbpGGVQR3_X-FaJg/viewform";
